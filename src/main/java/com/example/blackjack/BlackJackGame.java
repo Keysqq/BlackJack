@@ -8,36 +8,51 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Random;
 
 
-public class HelloApplication extends Application {
+public class BlackJackGame extends Application {
     int HouseScore=0;
     int wins=0;
     int PlayerScore=0;
     String Status;
 
+
     @Override
     public void start(Stage stage) throws IOException {
-        // create a pane to house all nodes in using a grid concept
+
+        Image[] imgg = new Image[4];
+        imgg[0]= (new Image("club.PNG"));
+        imgg[1]= (new Image("diamond.PNG"));
+        imgg[2]= (new Image("heart.PNG"));
+        imgg[3]= (new Image("spade.PNG"));
+                // create a pane to house all nodes in using a grid concept
         GridPane grid = new GridPane();
         //create another grid to hold game/score info (bottom right)
         GridPane scoreBox = new GridPane();
         //vbox used to house game button controls (bottom left)
         VBox vb = new VBox();
+        VBox vb1 = new VBox();
+        StackPane stackBottomLeft = new StackPane();
         //ArrayList created in order to hold the deck of 52 cards
         ArrayList<Card> deck = new ArrayList<Card>();
 
@@ -52,7 +67,9 @@ public class HelloApplication extends Application {
         Button play = new Button("Play");
         Button hit = new Button("Hit ");
         Button call = new Button("Call");
-
+        Button shuffle = new Button("Shuffle");
+    //shuffle.setPrefHeight(50);
+        shuffle.setMaxHeight(1500);
         Label houseScore = new Label("House:");
         Label playerScore = new Label("Player:");
         Label status = new Label("Status:");
@@ -63,58 +80,84 @@ public class HelloApplication extends Application {
         Text stat = new Text();
         Text winCount = new Text();
 
+        ImageView img1 = new ImageView("club.PNG");
+        ImageView img2 = new ImageView("club.PNG");
+        ImageView img3 = new ImageView("club.PNG");
+        ImageView img4 = new ImageView("club.PNG");
+        vb1.getChildren().addAll(shuffle);
+        vb1.setAlignment(Pos.BASELINE_RIGHT);
         vb.getChildren().addAll(play,hit,call);
+
+        vb.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);//clear out the firsts vbox overlay of the grid cell so to allow for the second vbox content be clickable
+        StackPane.setAlignment(vb, Pos.TOP_LEFT);//hugs the firsts vb to left
+        stackBottomLeft.getChildren().addAll(vb1,vb);
+
 
 //region Card Visual set up
         //Creating a visual card
-        Text txt1 = new Text();
-        Text txt2 = new Text();
-        Text txt3 = new Text();
-        Text txt4 = new Text();
-        Text txt5 = new Text();
-        Text txt6 = new Text();
-        Text txt7 = new Text();
-        Text txt8 = new Text();
+        Text txt1 = new Text();txt1.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt2 = new Text();txt2.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt3 = new Text();txt3.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt4 = new Text();txt4.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt5 = new Text();txt5.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt6 = new Text();txt6.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt7 = new Text();txt7.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        Text txt8 = new Text();txt8.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
 
-        Rectangle rec1 = new Rectangle(100,100);
+        Rectangle rec1 = new Rectangle(150,200);
         rec1.setStroke(Color.BLACK);
         rec1.setFill(Color.TRANSPARENT);
         rec1.setArcHeight(10.0d);
         rec1.setArcWidth(10.0d);
 
-        Rectangle rec2 = new Rectangle(100,100);
+        Rectangle rec2 = new Rectangle(150,200);
         rec2.setStroke(Color.BLACK);
         rec2.setFill(Color.TRANSPARENT);
         rec2.setArcHeight(10.0d);
         rec2.setArcWidth(10.0d);
 
-        Rectangle rec3 = new Rectangle(100,100);
+        Rectangle rec3 = new Rectangle(150,200);
         rec3.setStroke(Color.BLACK);
         rec3.setFill(Color.TRANSPARENT);
-        Rectangle rec4 = new Rectangle(100,100);
+        rec3.setArcHeight(10.0d);
+        rec3.setArcWidth(10.0d);
+
+        Rectangle rec4 = new Rectangle(150,200);
         rec4.setStroke(Color.BLACK);
         rec4.setFill(Color.TRANSPARENT);
+        rec4.setArcHeight(10.0d);
+        rec4.setArcWidth(10.0d);
 
-        //use of stack pane in order to stack text within a VBox on top of a shape.
+        //use of stack pane in order to stack text and images within a VBox on top of a shape.
+        //cards consist of 2 vboxes to hold separate regions of the cards visual attributes
         StackPane stack1 = new StackPane();
-        VBox card1 = new VBox();
-        card1.getChildren().addAll(txt1,txt2);
-        stack1.getChildren().addAll(rec1, card1);
+        VBox card1 = new VBox(); VBox card11 = new VBox();
+        card11.setPadding(new Insets(10,10,10,10));
+        card1.getChildren().addAll(txt1);
+        card11.getChildren().addAll(txt2);
+        stack1.getChildren().addAll(rec1, card1,card11);
+        card11.setAlignment( Pos.BOTTOM_RIGHT);
 
         StackPane stack2 = new StackPane();
-        VBox card2 = new VBox();
+        VBox card2 = new VBox(); VBox card22 = new VBox();
+        card22.setPadding(new Insets(10,10,10,10));
         card2.getChildren().addAll(txt3,txt4);
-        stack2.getChildren().addAll(rec2, card2);
+        stack2.getChildren().addAll(rec2, card2,card22);
+        card22.setAlignment( Pos.BOTTOM_RIGHT);
 
         StackPane stack3 = new StackPane();
-        VBox card3 = new VBox();
+        VBox card3 = new VBox();VBox card33 = new VBox();
+        card33.setPadding(new Insets(10,10,10,10));
         card3.getChildren().addAll(txt5,txt6);
-        stack3.getChildren().addAll(rec3, card3);
+        stack3.getChildren().addAll(rec3, card3,card33);
+        card33.setAlignment( Pos.BOTTOM_RIGHT);
 
         StackPane stack4 = new StackPane();
-        VBox card4 = new VBox();
+        VBox card4 = new VBox(); VBox card44 = new VBox();
+        card44.setPadding(new Insets(10,10,10,10));
         card4.getChildren().addAll(txt7,txt8);
-        stack4.getChildren().addAll(rec4, card4);
+        stack4.getChildren().addAll(rec4, card4,card44);
+        card44.setAlignment( Pos.BOTTOM_RIGHT);
 //endregion
         //main housing grid
         //position nodes within spec col,row
@@ -122,7 +165,8 @@ public class HelloApplication extends Application {
         grid.setConstraints(stack2,1,0);
         grid.setConstraints(stack3,0,1);
         grid.setConstraints(stack4,1,1);
-        grid.setConstraints(vb,0,2);
+        grid.setConstraints(stackBottomLeft,0,2);
+        //grid.setConstraints(vb1,1,2);
         grid.setConstraints(scoreBox,1,2);
 
         //sub node grid (bottom right)
@@ -137,9 +181,13 @@ public class HelloApplication extends Application {
 
         //add the nodes to the pain
         scoreBox.getChildren().addAll(houseScore,playerScore,status,runningWins,hScore,pScore,stat,winCount);
-        grid.getChildren().addAll(stack1,stack2,stack3,stack4,vb,scoreBox);
+        grid.getChildren().addAll(stack1,stack2,stack3,stack4,stackBottomLeft,scoreBox);
 
+        call.setDisable(true);
+        hit.setDisable(true);
+        shuffle.setDisable(true);
 
+//region play func
         //this method takes care of the play button
         //each time play is selected the deck is reset/ shuffled
         //once clicked four cards will be randomly delt to the player and house
@@ -154,6 +202,7 @@ public class HelloApplication extends Application {
                 PlayerScore=0;
                 call.setDisable(false);
                 hit.setDisable(false);
+                shuffle.setDisable(false);
                 stat.setText("");
                 deck.clear();//clear list for new deck shuffle
                 CreateDeck(deck);
@@ -163,8 +212,10 @@ public class HelloApplication extends Application {
 
                 deckCount -= 1;//deck count lowered bc card has been removed/drawn
                 HouseScore+=deck.get(cardIndex).getNumber();//add to the hands total score
-                txt1.setText(deck.get(cardIndex).getPip());
-                txt2.setText(deck.get(cardIndex).getSuit());
+                txt1.setText(deck.get(cardIndex).getPip());//set txt to the cards value (upper left)
+                img1.setImage(imgg[deck.get(cardIndex).getSuit()]);//set the cards suit image (bottom right)
+                card11.getChildren().remove(img1);//remove so to clear for other games/image instances
+                card11.getChildren().addAll(img1);//add the image
                 //remove list item(card) so not to use again as its been delt
                 deck.remove(cardIndex);
 
@@ -172,22 +223,28 @@ public class HelloApplication extends Application {
                 deckCount -= 1;
                 HouseScore+=deck.get(cardIndex).getNumber();
                 txt3.setText(deck.get(cardIndex).getPip());
-                txt4.setText(deck.get(cardIndex).getSuit());
+                //txt4.setText(deck.get(cardIndex).getSuit());
+                img2.setImage(imgg[deck.get(cardIndex).getSuit()]);
+                card22.getChildren().remove(img2);
+                card22.getChildren().addAll(img2);
                 deck.remove(cardIndex);
-                //txt2.setText(String.valueOf(deck.get(cardIndex).getNumber()));
 
                 cardIndex = Play(deck, deckCount);
                 deckCount -= 1;
                 PlayerScore+=deck.get(cardIndex).getNumber();
                 txt5.setText(deck.get(cardIndex).getPip());
-                txt6.setText(deck.get(cardIndex).getSuit());
+                img3.setImage(imgg[deck.get(cardIndex).getSuit()]);
+                card33.getChildren().remove(img3);
+                card33.getChildren().addAll(img3);
                 deck.remove(cardIndex);
 
                 cardIndex = Play(deck, deckCount);
                 deckCount -= 1;
                 PlayerScore+=deck.get(cardIndex).getNumber();
                 txt7.setText(deck.get(cardIndex).getPip());
-                txt8.setText(deck.get(cardIndex).getSuit());
+                img3.setImage(imgg[deck.get(cardIndex).getSuit()]);
+                card44.getChildren().remove(img4);
+                card44.getChildren().addAll(img4);
                 deck.remove(cardIndex);
 
                 play.setDisable(true);//disable button after use
@@ -198,11 +255,10 @@ public class HelloApplication extends Application {
 
             }
         });
+        //endregion
+//region hit func
 
-        //hit button draws the player a new card
-        //the players total is checked for a bust
-        //current score is updated
-        //appropriate buttons are enabled and disabled
+
         hit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -214,9 +270,12 @@ public class HelloApplication extends Application {
                 deckCount -= 1;
                 PlayerScore+=deck.get(cardIndex).getNumber();
                 txt5.setText(deck.get(cardIndex).getPip());
-                txt6.setText(deck.get(cardIndex).getSuit());
+                img3.setImage(imgg[deck.get(cardIndex).getSuit()]);
+                card33.getChildren().remove(img3);
+                card33.getChildren().addAll(img3);
                 deck.remove(cardIndex);
                 pScore.setText(String.valueOf(PlayerScore));
+
 
                 //check for a bust
                 //end game and set buttons to proper stage of the game
@@ -229,7 +288,8 @@ public class HelloApplication extends Application {
                 }
             }
         });
-
+        //endregion
+//region call func
         //call checks for a win / tie
         //player and house scores are compared
         //buttons are set to appropriate usable status
@@ -285,22 +345,44 @@ public class HelloApplication extends Application {
 
             }
         });
+//endregion
+// region shuffle func
+        //Method to shuffle c
+        shuffle.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Collections.shuffle(deck);
+                stat.setText("Deck Shuffled");
 
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game Info");
+                alert.setHeaderText("Deck Shuffled" );
+                alert.setContentText("Deck Shuffled");
+                alert.showAndWait().ifPresent(rs -> {
+                    if (rs == ButtonType.OK) {
+                        System.out.println("Pressed OK.");
+                    }
+                });
+
+            }
+        });
+        //endregion
 
         Scene scene = new Scene(grid);
-        stage.setTitle("Hello!");
+        stage.setTitle("Black Jack");
         stage.setScene(scene);
         stage.show();
     }//
 
     public static void main(String[] args) {
         launch();
-    }
-
+    }//
+//region Create Deck func
     public static void CreateDeck(ArrayList deck){
         //Create a 52 card deck
         String[] faceCards = {"King","Queen","Jack"};
-        String[] suits = {"Spades","Hearts","Diamonds","Clubs"};
+        int[] suits = {0,1,2,3};
+        //String[] suits = {"Spades","Hearts","Diamonds","Clubs"};
 
         //set pip cards
         for (int j =0;j<4;j++) {
@@ -341,5 +423,7 @@ public class HelloApplication extends Application {
         });
 
     }
+    //endregion
+
 
 }//
